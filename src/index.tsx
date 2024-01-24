@@ -1,4 +1,4 @@
-import './index.css'
+import './index.scss'
 import './i18n/config'
 
 import React from 'react'
