@@ -1,5 +1,6 @@
 import './index.scss'
 import './i18n/config'
+import './web3/init'
 
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'

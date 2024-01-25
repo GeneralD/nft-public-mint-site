@@ -1,0 +1,9 @@
+---
+connectWallet:
+  connectButton:
+    label: "ウォレット接続"
+  disconnectDialog:
+    title: "ウォレットを切断しますか？"
+    content: "ウォレットを切断すると、ウォレットのアドレスが表示されなくなります。"
+    confirm: "切断する"
+    cancel: "キャンセル"

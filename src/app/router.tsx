@@ -1,6 +1,7 @@
-import { createBrowserRouter } from "react-router-dom"
-import Root from "../features/root/Root"
-import PublicMint from "../features/public-mint/PublicMint"
+import { createBrowserRouter } from 'react-router-dom'
+
+import PublicMint from '../features/PublicMint'
+import Root from '../features/Root'
 
 export default createBrowserRouter([
     {

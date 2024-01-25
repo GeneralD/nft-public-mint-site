@@ -4,8 +4,8 @@ import { Outlet } from 'react-router-dom'
 import MenuIcon from '@mui/icons-material/Menu'
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 
-import useWindowSize from '../../hooks/useWindowSize'
-import ConnectWalletButton from '../common/connect-wallet-button/ConnectWalletButton'
+import useWindowSize from '../hooks/useWindowSize'
+import ConnectWalletButton from './common/ConnectWalletButton'
 
 export default () => {
     const { isMobile } = useWindowSize()
@@ -26,8 +26,7 @@ export default () => {
                     <Typography variant='h6' component='span' sx={{ flexGrow: 1 }}>
                         {title}
                     </Typography>
-                    <ConnectWalletButton
-                        color='inherit' />
+                    <ConnectWalletButton color='inherit' />
                 </Toolbar>
             </AppBar>
             <Outlet />

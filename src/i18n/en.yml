@@ -1,0 +1,9 @@
+---
+connectWallet:
+  connectButton:
+    label: "Connect Wallet"
+  disconnectDialog:
+    title: "Disconnect Wallet?"
+    content: "If you disconnect your wallet, your wallet address will no longer be displayed."
+    confirm: "Disconnect"
+    cancel: "Cancel"
