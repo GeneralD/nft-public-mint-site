@@ -1,8 +1,8 @@
 import { produce } from 'immer'
-import { useCallback, useState } from 'react'
+import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, TextField } from '@mui/material'
+import { Button, Card, TextField } from '@mui/material'
 import { useWallets } from '@web3-onboard/react'
 
 export default () => {
@@ -16,31 +16,43 @@ export default () => {
         amount: 1,
     })
 
-    const handleMint = useCallback(async () => {
+    const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
+        event.preventDefault()
         if (!connectedWallets.length) return
         // TODO
     }, [connectedWallets])
 
     return <>
-        <TextField
-            label={t('publicMint.amountInput.label')}
-            type='number'
-            color='primary'
-            size='small'
-            value={state.amount?.toString() || ''}
-            onChange={e => {
-                setState(produce(draft => {
-                    draft.amount = e.target.value.length === 0
-                        ? undefined
-                        : Math.max(1, Number(e.target.value))
-                }))
-            }}
-        />
-        <Button
-            color='inherit'
-            variant='contained'
-            onClick={handleMint}>
-            {t('publicMint.mintButton.label')}
-        </Button>
+        <Card>
+            <form
+                onSubmit={handleMint}
+                autoComplete='off'>
+                <TextField
+                    label={t('publicMint.amountInput.label')}
+                    type='number'
+                    variant='standard'
+                    color='primary'
+                    size='small'
+                    required
+                    value={state.amount?.toString() || ''}
+                    onChange={e => {
+                        setState(produce(draft => {
+                            draft.amount = e.target.value.length === 0
+                                ? undefined
+                                : Math.max(1, Number(e.target.value))
+                        }))
+                    }}
+                    InputLabelProps={{
+                        shrink: true,
+                    }} />
+                <Button
+                    color='inherit'
+                    variant='contained'
+                    type='submit'
+                    disabled={!connectedWallets.length}>
+                    {t('publicMint.mintButton.label')}
+                </Button>
+            </form >
+        </Card>
     </>
 }
