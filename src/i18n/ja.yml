@@ -7,3 +7,8 @@ connectWallet:
     content: "ウォレットを切断すると、ウォレットのアドレスが表示されなくなります。"
     confirm: "切断する"
     cancel: "キャンセル"
+publicMint:
+  mintButton:
+    label: "ミント"
+  amountInput:
+    label: "数量"

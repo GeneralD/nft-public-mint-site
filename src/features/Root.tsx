@@ -23,10 +23,16 @@ export default () => {
                         aria-label='menu'>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant='h6' component='span' sx={{ flexGrow: 1 }}>
+                    <Typography
+                        variant='h6'
+                        color='inherit'
+                        component='span'
+                        sx={{ flexGrow: 1 }}>
                         {title}
                     </Typography>
-                    <ConnectWalletButton color='inherit' />
+                    <ConnectWalletButton
+                        variant='outlined'
+                        color='inherit' />
                 </Toolbar>
             </AppBar>
             <Outlet />
