@@ -4,14 +4,9 @@ import { init } from '@web3-onboard/react'
 init({
     wallets: [injectedModule()],
     chains: [{
-        id: '0x1',
-        token: 'ETH',
-        label: 'Mainnet',
-        rpcUrl: process.env.REACT_APP_MAINNET_RPC_URL
-    }, {
-        id: '0x5',
-        token: 'ETH',
-        label: 'Goerli',
-        rpcUrl: process.env.REACT_APP_GOERLI_RPC_URL
+        id: process.env.REACT_APP_CHAIN_ID ?? '0x1',
+        token: process.env.REACT_APP_CHAIN_TOKEN ?? 'ETH',
+        label: process.env.REACT_APP_CHAIN_LABEL ?? 'Mainnet',
+        rpcUrl: process.env.REACT_APP_RPC_URL ?? '',
     }]
 })
