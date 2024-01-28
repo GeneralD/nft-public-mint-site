@@ -1,7 +1,7 @@
 import injectedModule from '@web3-onboard/injected-wallets'
 import { init } from '@web3-onboard/react'
 
-init({
+export default init({
     wallets: [injectedModule()],
     chains: [{
         id: process.env.REACT_APP_CHAIN_ID ?? '0x1',
