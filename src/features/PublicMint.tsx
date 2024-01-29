@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -5,9 +6,14 @@ import { useTranslation } from 'react-i18next'
 import { Button, Card, TextField } from '@mui/material'
 import { useWallets } from '@web3-onboard/react'
 
-export default () => {
-    const { t } = useTranslation()
+import IERC721 from '../web3/abi/IERC721.json'
+import IPublicMintable from '../web3/abi/IPublicMintable.json'
 
+export default () => {
+    const interfaceIERC721 = new ethers.utils.Interface(IERC721.abi)
+    const interfaceIPublicMintable = new ethers.utils.Interface(IPublicMintable.abi)
+
+    const { t } = useTranslation()
     const connectedWallets = useWallets()
 
     const [state, setState] = useState<{
@@ -16,10 +22,19 @@ export default () => {
         amount: 1,
     })
 
+    const sendTransaction = useCallback(async (eth: string) => {
+        if (!connectedWallets.length) return
+        const senderAddress = connectedWallets[0].accounts[0].address
+        const provider = connectedWallets[0].provider
+
+    }, [])
+
+
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()
         if (!connectedWallets.length) return
-        // TODO
+        const senderAddress = connectedWallets[0].accounts[0].address
+
     }, [connectedWallets])
 
     return <>
