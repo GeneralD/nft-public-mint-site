@@ -4,17 +4,16 @@ import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Card, TextField } from '@mui/material'
-import { useWallets } from '@web3-onboard/react'
 
 import IERC721 from '../web3/abi/IERC721.json'
 import IPublicMintable from '../web3/abi/IPublicMintable.json'
 
 export default () => {
-    const interfaceIERC721 = new ethers.utils.Interface(IERC721.abi)
-    const interfaceIPublicMintable = new ethers.utils.Interface(IPublicMintable.abi)
+    // const interfaceIERC721 = new ethers.utils.Interface(IERC721.abi)
+    // const interfaceIPublicMintable = new ethers.utils.Interface(IPublicMintable.abi)
 
     const { t } = useTranslation()
-    const connectedWallets = useWallets()
+    // const connectedWallets = useWallets()
 
     const [state, setState] = useState<{
         amount?: number,
@@ -22,24 +21,24 @@ export default () => {
         amount: 1,
     })
 
-    const sendTransaction = useCallback(async (eth: string) => {
-        if (!connectedWallets.length) return
-        const senderAddress = connectedWallets[0].accounts[0].address
-        const provider = connectedWallets[0].provider
+    // const sendTransaction = useCallback(async (eth: string) => {
+    //     if (!connectedWallets.length) return
+    //     const senderAddress = connectedWallets[0].accounts[0].address
+    //     const provider = connectedWallets[0].provider
 
-    }, [])
+    // }, [])
 
 
-    const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
-        event.preventDefault()
-        if (!connectedWallets.length) return
-        const senderAddress = connectedWallets[0].accounts[0].address
+    // const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
+    //     event.preventDefault()
+    //     if (!connectedWallets.length) return
+    //     const senderAddress = connectedWallets[0].accounts[0].address
 
-    }, [connectedWallets])
+    // }, [connectedWallets])
 
     return <>
         <Card>
-            <form
+            {/* <form
                 onSubmit={handleMint}
                 autoComplete='off'>
                 <TextField
@@ -67,7 +66,7 @@ export default () => {
                     disabled={!connectedWallets.length}>
                     {t('publicMint.mintButton.label')}
                 </Button>
-            </form >
+            </form > */}
         </Card>
     </>
 }

@@ -7,11 +7,10 @@ import { HelmetProvider } from 'react-helmet-async'
 import { RouterProvider } from 'react-router-dom'
 
 import { ScopedCssBaseline, ThemeProvider } from '@mui/material'
-import { Web3OnboardProvider } from '@web3-onboard/react'
 
 import router from './app/router'
 import theme from './app/theme'
-import onboard from './web3/onboard'
+import Web3Provider from './web3/Web3Provider'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -19,13 +18,12 @@ const root = ReactDOM.createRoot(
 root.render(
   <StrictMode>
     <HelmetProvider>
-      <Web3OnboardProvider web3Onboard={onboard}>
-        <ScopedCssBaseline>
-          <ThemeProvider theme={theme}>
-            <RouterProvider router={router} />
-          </ThemeProvider>
-        </ScopedCssBaseline>
-      </Web3OnboardProvider>
+      <ScopedCssBaseline>
+        <ThemeProvider theme={theme}>
+          <Web3Provider />
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </ScopedCssBaseline>
     </HelmetProvider>
   </StrictMode>
 )
