@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { Web3ReactHooks, Web3ReactProvider } from '@web3-react/core'
 import { MetaMask } from '@web3-react/metamask'
 
@@ -7,10 +9,12 @@ const connectors: [MetaMask, Web3ReactHooks][] = [
     [metaMask, metaMaskHooks],
 ]
 
-export default () => {
+export default (props: {
+    children: ReactNode
+}) => {
     return <>
         <Web3ReactProvider connectors={connectors}>
-            {null}
+            {props.children}
         </Web3ReactProvider>
     </>
 }

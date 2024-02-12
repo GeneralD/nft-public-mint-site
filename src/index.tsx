@@ -20,8 +20,9 @@ root.render(
     <HelmetProvider>
       <ScopedCssBaseline>
         <ThemeProvider theme={theme}>
-          <Web3Provider />
-          <RouterProvider router={router} />
+          <Web3Provider>
+            <RouterProvider router={router} />
+          </Web3Provider>
         </ThemeProvider>
       </ScopedCssBaseline>
     </HelmetProvider>

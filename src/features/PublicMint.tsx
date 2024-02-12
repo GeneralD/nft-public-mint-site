@@ -1,19 +1,22 @@
+import useEtherSWR from 'ether-swr'
 import { ethers } from 'ethers'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Card, TextField } from '@mui/material'
+import { useWeb3React } from '@web3-react/core'
 
 import IERC721 from '../web3/abi/IERC721.json'
 import IPublicMintable from '../web3/abi/IPublicMintable.json'
 
 export default () => {
-    // const interfaceIERC721 = new ethers.utils.Interface(IERC721.abi)
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS
+    // const interfaceIERC721 = new ethers.Contract(contractAddress, IERC721.abi, provider)
     // const interfaceIPublicMintable = new ethers.utils.Interface(IPublicMintable.abi)
 
     const { t } = useTranslation()
-    // const connectedWallets = useWallets()
+    const { account, isActive } = useWeb3React()
 
     const [state, setState] = useState<{
         amount?: number,
@@ -29,16 +32,15 @@ export default () => {
     // }, [])
 
 
-    // const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
-    //     event.preventDefault()
-    //     if (!connectedWallets.length) return
-    //     const senderAddress = connectedWallets[0].accounts[0].address
+    const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
+        event.preventDefault()
+        if (!isActive) return
 
-    // }, [connectedWallets])
+    }, [account, isActive])
 
     return <>
         <Card>
-            {/* <form
+            <form
                 onSubmit={handleMint}
                 autoComplete='off'>
                 <TextField
@@ -63,10 +65,10 @@ export default () => {
                     color='inherit'
                     variant='contained'
                     type='submit'
-                    disabled={!connectedWallets.length}>
+                    disabled={!isActive}>
                     {t('publicMint.mintButton.label')}
                 </Button>
-            </form > */}
+            </form >
         </Card>
     </>
 }
