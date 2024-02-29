@@ -6,6 +6,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 
 import useWindowSize from '../hooks/useWindowSize'
 import ConnectWalletButton from './common/ConnectWalletButton'
+import LanguageSelect from './common/LanguageSelect'
 
 export default () => {
     const { isMobile } = useWindowSize()
@@ -17,7 +18,7 @@ export default () => {
             <AppBar position="static">
                 <Toolbar>
                     <IconButton
-                        size='large'
+                        size='small'
                         edge='start'
                         color='inherit'
                         aria-label='menu'>
@@ -30,6 +31,9 @@ export default () => {
                         sx={{ flexGrow: 1 }}>
                         {title}
                     </Typography>
+                    <LanguageSelect
+                        size='small'
+                        variant='outlined' />
                     <ConnectWalletButton
                         variant='outlined'
                         color='inherit' />
