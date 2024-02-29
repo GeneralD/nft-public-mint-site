@@ -12,3 +12,4 @@ publicMint:
     label: "ミント"
   amountInput:
     label: "数量"
+  priceLabel: "1mint: {{value}}{{valueSymbol}}"

@@ -20,7 +20,8 @@
     "react-helmet-async": "^2.0.4",
     "react-i18next": "^14.0.1",
     "react-router-dom": "^6.21.3",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@craco/craco": "^7.1.0",
