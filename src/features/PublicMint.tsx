@@ -1,18 +1,19 @@
-import { formatEther, id, Wallet } from 'ethers'
+import { formatEther } from 'ethers'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import useSWR from 'swr'
 
 import { Button, Card, TextField, Typography } from '@mui/material'
-import { useWeb3React } from '@web3-react/core'
 
-import contract from '../web3/contract'
-import usePublicMintPrice from '../web3/swr/usePublicMintPrice'
+import useContract from '../web3/useContract'
+import useWallet from '../web3/useWallet'
 
 export default () => {
     const { t } = useTranslation()
-    const { account, isActive } = useWeb3React()
-    const { data: price } = usePublicMintPrice()
+    const wallet = useWallet()
+    const contract = useContract()
+    const { data: price } = useSWR('publicMintPrice', async (): Promise<bigint> => await contract.publicMintPrice())
 
     const [state, setState] = useState<{
         amount?: bigint,
@@ -24,18 +25,18 @@ export default () => {
         event.preventDefault()
 
         const amount = state.amount
-        const isReady = !!account && !!amount && !!price
+        const isReady = !!wallet && !!amount && !!price
         if (!isReady) return
 
-        const totalPrice = price * amount
         try {
-            const tx = await contract.publicMint(state.amount, { value: totalPrice })
+            const nonce = await wallet?.getNonce()
+            const tx = await contract.publicMint(state.amount, { value: price * amount, nonce, })
+            // await wallet.signTransaction(tx)
             // await tx.wait()
-            // await new Wallet(id(account)).signTransaction(tx)
         } catch (error) {
             console.error(error)
         }
-    }, [account, state.amount])
+    }, [contract, price, state.amount, wallet])
 
     const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
 
@@ -71,7 +72,7 @@ export default () => {
                     color='inherit'
                     variant='contained'
                     type='submit'
-                    disabled={!isActive}>
+                    disabled={!wallet}>
                     {t('publicMint.mintButton.label')}
                 </Button>
             </form >
