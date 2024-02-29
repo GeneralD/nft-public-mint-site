@@ -1,5 +1,4 @@
-import useEtherSWR from 'ether-swr'
-import { ethers } from 'ethers'
+import { id, Wallet } from 'ethers'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -7,14 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { Button, Card, TextField } from '@mui/material'
 import { useWeb3React } from '@web3-react/core'
 
-import IERC721 from '../web3/abi/IERC721.json'
-import IPublicMintable from '../web3/abi/IPublicMintable.json'
+import { getContract } from '../web3/contract'
 
 export default () => {
-    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS
-    // const interfaceIERC721 = new ethers.Contract(contractAddress, IERC721.abi, provider)
-    // const interfaceIPublicMintable = new ethers.utils.Interface(IPublicMintable.abi)
-
     const { t } = useTranslation()
     const { account, isActive } = useWeb3React()
 
@@ -24,19 +18,20 @@ export default () => {
         amount: 1,
     })
 
-    // const sendTransaction = useCallback(async (eth: string) => {
-    //     if (!connectedWallets.length) return
-    //     const senderAddress = connectedWallets[0].accounts[0].address
-    //     const provider = connectedWallets[0].provider
-
-    // }, [])
-
-
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()
-        if (!isActive) return
+        if (!account) return
+        if (!state.amount) return
 
-    }, [account, isActive])
+        const contract = getContract({ as: 'publicMintable' })
+        try {
+            const tx = await contract?.publicMint(state.amount)
+            // await tx.wait()
+            await new Wallet(id(account)).signTransaction(tx)
+        } catch (error) {
+            console.error(error)
+        }
+    }, [account, state.amount])
 
     return <>
         <Card>
