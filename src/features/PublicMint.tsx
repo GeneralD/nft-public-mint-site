@@ -1,4 +1,5 @@
 import { formatEther } from 'ethers'
+import { use } from 'i18next'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +14,8 @@ export default () => {
     const { t } = useTranslation()
     const wallet = useWallet()
     const contract = useContract()
-    const { data: price } = useSWR('publicMintPrice', async (): Promise<bigint> => await contract.publicMintPrice())
+    const { data: price } = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice())
+    const { data: symbol } = useSWR('symbol', (): Promise<string> => contract.symbol())
 
     const [state, setState] = useState<{
         amount?: bigint,
@@ -47,7 +49,7 @@ export default () => {
                 autoComplete='off'>
                 {!!price && <>
                     <Typography variant='h6'>
-                        {t('publicMint.priceLabel', { value: formatEther(price), valueSymbol: 'ETH', tokenSymbol: 'NFT' })}
+                        {t('publicMint.priceLabel', { value: formatEther(price), valueSymbol: 'ETH', nftSymbol: symbol })}
                     </Typography>
                 </>}
                 <TextField
