@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -18,6 +18,10 @@ export default (props: ButtonProps) => {
     const accounts = useAccounts()
     const isActivating = useIsActivating()
     const isActive = useIsActive()
+
+    useEffect(() => {
+        metaMask.connectEagerly()
+    }, [])
 
     const handleClick = useCallback(async () => {
         if (isActive) {

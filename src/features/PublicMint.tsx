@@ -1,5 +1,4 @@
-import { formatEther } from 'ethers'
-import { use } from 'i18next'
+import { formatEther, TransactionRequest } from 'ethers'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -7,15 +6,13 @@ import useSWR from 'swr'
 
 import { Button, Card, TextField, Typography } from '@mui/material'
 
-import useContract from '../web3/useContract'
-import useWallet from '../web3/useWallet'
+import useWeb3 from '../web3/useWeb3'
 
 export default () => {
     const { t } = useTranslation()
-    const wallet = useWallet()
-    const contract = useContract()
+    const { isActive, contract, signer } = useWeb3()
     const { data: price } = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice())
-    const { data: symbol } = useSWR('symbol', (): Promise<string> => contract.symbol())
+    const { data: symbol } = useSWR('publicMintSymbol', (): Promise<string> => contract.symbol())
 
     const [state, setState] = useState<{
         amount?: bigint,
@@ -27,18 +24,18 @@ export default () => {
         event.preventDefault()
 
         const amount = state.amount
-        const isReady = !!wallet && !!amount && !!price
+        const isReady = !!signer && !!amount && !!price
         if (!isReady) return
 
         try {
-            const nonce = await wallet?.getNonce()
-            const tx = await contract.publicMint(state.amount, { value: price * amount, nonce, })
-            // await wallet.signTransaction(tx)
-            // await tx.wait()
+            const value = price * amount
+            const tx: TransactionRequest = await contract.publicMint(state.amount, { value, })
+            const populatedTx = await signer.populateTransaction(tx)
+            const response = await signer.sendTransaction(populatedTx)
         } catch (error) {
             console.error(error)
         }
-    }, [contract, price, state.amount, wallet])
+    }, [contract, price, signer, state.amount])
 
     const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
 
@@ -74,7 +71,7 @@ export default () => {
                     color='inherit'
                     variant='contained'
                     type='submit'
-                    disabled={!wallet}>
+                    disabled={!isActive}>
                     {t('publicMint.mintButton.label')}
                 </Button>
             </form >
