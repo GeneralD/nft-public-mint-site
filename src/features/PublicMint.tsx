@@ -10,7 +10,7 @@ import useWeb3 from '../web3/useWeb3'
 
 export default () => {
     const { t } = useTranslation()
-    const { isActive, contract, signer } = useWeb3()
+    const { isActive, contract, sendTransaction } = useWeb3()
     const { data: price } = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice())
     const { data: symbol } = useSWR('publicMintSymbol', (): Promise<string> => contract.symbol())
 
@@ -24,18 +24,17 @@ export default () => {
         event.preventDefault()
 
         const amount = state.amount
-        const isReady = !!signer && !!amount && !!price
+        const isReady = !!sendTransaction && !!amount && !!price
         if (!isReady) return
 
         try {
-            const value = price * amount
-            const tx: TransactionRequest = await contract.publicMint(state.amount, { value, })
-            const populatedTx = await signer.populateTransaction(tx)
-            const response = await signer.sendTransaction(populatedTx)
+            const tx: TransactionRequest = await contract.publicMint(state.amount, { value: price * amount })
+            const response = await sendTransaction(tx)
+            console.info(`Transaction hash: ${response?.hash}`)
         } catch (error) {
             console.error(error)
         }
-    }, [contract, price, signer, state.amount])
+    }, [contract, sendTransaction, state.amount, price])
 
     const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
 

@@ -1,4 +1,6 @@
-import { Contract, Signer, WebSocketProvider } from 'ethers'
+import {
+    Contract, Signer, TransactionRequest, TransactionResponse, WebSocketProvider
+} from 'ethers'
 import { useEffect, useState } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
@@ -32,9 +34,32 @@ const useContract = () => {
     return contract
 }
 
+// SendTransaction: Automatically updates the sendTransaction when the signer changes.
+const useSendTransaction = () => {
+    const signer = useSigner()
+    const [sendTransaction, setSendTransaction] = useState<(tx: TransactionRequest) => Promise<TransactionResponse>>()
+    useEffect(() => {
+        if (!signer) return setSendTransaction(undefined)
+
+        setSendTransaction(() => async (tx: TransactionRequest) => {
+            const populatedTx = await signer.populateTransaction(tx)
+            // to avoid the "Cannot send both gasPrice and maxFeePerGas param" error
+            delete populatedTx.maxFeePerGas
+            delete populatedTx.maxPriorityFeePerGas
+            // configured nonce has already been used...
+            populatedTx.nonce = await signer.getNonce()
+            // send the transaction
+            return await signer.sendTransaction(populatedTx)
+        })
+    }, [signer])
+
+    return sendTransaction
+}
+
 export default () => {
     const { account } = useWeb3React()
     const signer = useSigner()
     const contract = useContract()
-    return { account, isActive: !!account, signer, contract }
+    const sendTransaction = useSendTransaction()
+    return { account, isActive: !!account, signer, contract, sendTransaction }
 }
