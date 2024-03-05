@@ -333,5 +333,9 @@
             "stateMutability": "nonpayable",
             "type": "function"
         }
-    ]
+    ],
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "linkReferences": {},
+    "deployedLinkReferences": {}
 }
