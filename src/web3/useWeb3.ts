@@ -5,9 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
 
-import IEC721Metadata from './abi/IEC721Metadata.json'
-import IERC721 from './abi/IERC721.json'
-import IPublicMintable from './abi/IPublicMintable.json'
+import abi from './abi/abi'
 
 // Provider
 const rpcUrl = process.env.REACT_APP_RPC_WS_URL || ''
@@ -26,7 +24,6 @@ const useSigner = () => {
 // Contract: Automatically updates the runner when the signer changes.
 const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || ''
 const useContract = () => {
-    const abi = [...IERC721.abi, ...IEC721Metadata.abi, ...IPublicMintable.abi]
     const unsigned = new Contract(contractAddress, abi, provider)
     const [contract, setContract] = useState<Contract>(unsigned)
     const signer = useSigner()
