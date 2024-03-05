@@ -1,7 +1,8 @@
 import {
-    Contract, Signer, TransactionRequest, TransactionResponse, WebSocketProvider
+    Contract, ContractEventName, Listener, Signer, TransactionRequest, TransactionResponse,
+    WebSocketProvider
 } from 'ethers'
-import { useEffect, useState } from 'react'
+import { DependencyList, useEffect, useState } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
 
@@ -39,18 +40,33 @@ const useSendTransaction = () => {
         if (!signer) return setSendTransaction(undefined)
 
         setSendTransaction(() => async (tx: TransactionRequest) => {
+            // MEMO: on localhost, this function will execute actual transactions. so it will be triggered twice.
             const populatedTx = await signer.populateTransaction(tx)
+
             // to avoid the "Cannot send both gasPrice and maxFeePerGas param" error
             delete populatedTx.maxFeePerGas
             delete populatedTx.maxPriorityFeePerGas
             // configured nonce has already been used...
             populatedTx.nonce = await signer.getNonce()
+
             // send the transaction
-            return await signer.sendTransaction(populatedTx)
+            // MEMO: on localhost, the transaction will be executed without confirmation.
+            const response = await signer.sendTransaction(populatedTx)
+            console.info(`Transaction hash: ${response.hash}`)
+            return response
         })
     }, [signer])
 
     return sendTransaction
+}
+
+// Event subscription
+const unsignedContract = new Contract(contractAddress, abi, provider)
+export const useEvent = (event: ContractEventName, listener: Listener, deps: DependencyList = []) => {
+    useEffect(() => {
+        unsignedContract.addListener(event, listener)
+        return () => { unsignedContract.removeListener(event, listener) }
+    }, [event, listener, ...deps])
 }
 
 export default () => {
@@ -58,5 +74,5 @@ export default () => {
     const signer = useSigner()
     const contract = useContract()
     const sendTransaction = useSendTransaction()
-    return { account, isActive: !!account, signer, contract, sendTransaction }
+    return { account, isActive: !!account, signer, contract, sendTransaction, }
 }
