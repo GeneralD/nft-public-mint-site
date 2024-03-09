@@ -38,10 +38,7 @@ export default () => {
 
     useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price))
 
-    useEvent(contract.filters.Transfer(ZeroAddress, account, null), useCallback(debounce((payload: ContractEventPayload) => {
-        const tokenId = payload.args.tokenId
-        toast.success(t('publicMint.toast.mintSuccess', { tokenId }))
-        setState(produce(draft => { draft.isPendingTx = false }))
+    const confetti = useCallback(() => {
         confettiRef.current?.({
             particleCount: 300,
             spread: 70,
@@ -54,7 +51,14 @@ export default () => {
             angle: -120,
             origin: { x: 1, y: -0.3 },
         })
-    }), [t, confettiRef]))
+    }, [confettiRef])
+
+    useEvent(contract.filters.Transfer(ZeroAddress, account, null), useCallback(debounce((payload: ContractEventPayload) => {
+        const tokenId = payload.args.tokenId
+        toast.success(t('publicMint.toast.mintSuccess', { tokenId }))
+        setState(produce(draft => { draft.isPendingTx = false }))
+        confetti()
+    }), [t, confetti]))
 
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()
