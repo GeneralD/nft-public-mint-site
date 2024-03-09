@@ -1,6 +1,6 @@
 import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } from 'ethers'
 import { produce } from 'immer'
-import { FormEventHandler, useCallback, useState } from 'react'
+import { FormEventHandler, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
@@ -13,14 +13,14 @@ export default () => {
     const { t } = useTranslation()
     const { account, isActive, contract, sendTransaction, } = useWeb3()
 
-    const priceResponse = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice())
+    const priceResponse = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice(), {
+        revalidateOnMount: true,
+        revalidateOnFocus: false,
+    })
     const { mutate: mutatePrice } = priceResponse
-    const { data: symbol } = useSWR('symbol', (): Promise<string> => contract.symbol())
-
-    useEvent(contract.filters.Transfer(ZeroAddress, account, null), (payload: ContractEventPayload) => {
-        const tokenId = payload.args.tokenId
-        console.info(`Minted: ${tokenId}`)
-        // TODO: display UI
+    const { data: symbol } = useSWR('symbol', (): Promise<string> => contract.symbol(), {
+        revalidateOnMount: true,
+        revalidateOnFocus: false,
     })
 
     const [state, setState] = useState<{
@@ -29,7 +29,13 @@ export default () => {
         amount: 1n,
     })
 
-    useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price), [mutatePrice])
+    useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price))
+
+    useEvent(contract.filters.Transfer(ZeroAddress, account, null), (payload: ContractEventPayload) => {
+        const tokenId = payload.args.tokenId
+        console.info(`Minted: ${tokenId}`)
+        // TODO: display UI
+    })
 
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()

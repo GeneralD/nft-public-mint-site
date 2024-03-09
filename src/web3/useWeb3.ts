@@ -2,7 +2,7 @@ import {
     Contract, ContractEventName, Listener, Signer, TransactionRequest, TransactionResponse,
     WebSocketProvider
 } from 'ethers'
-import { DependencyList, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
 
@@ -69,9 +69,9 @@ export default () => {
 
 // Event subscription
 const unsignedContract = new Contract(contractAddress, abi, provider)
-export const useEvent = (event: ContractEventName, listener: Listener, deps: DependencyList = []) => {
+export const useEvent = (event: ContractEventName, listener: Listener) =>
     useEffect(() => {
         unsignedContract.addListener(event, listener)
-        return () => { unsignedContract.removeListener(event, listener) }
-    }, [event, listener, ...deps])
-}
+        // if remove the listener, new listener won't work well. maybe it's a bug of ethers.js.
+        // return () => { unsignedContract.removeListener(event, listener) }
+    }, []) // if add some dependencies, it will be triggered so many times.
