@@ -1,6 +1,8 @@
 import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } from 'ethers'
 import { produce } from 'immer'
-import { FormEventHandler, useCallback, useState } from 'react'
+import { FormEventHandler, useCallback, useRef, useState } from 'react'
+import ReactCanvasConfetti from 'react-canvas-confetti'
+import { TCanvasConfettiInstance } from 'react-canvas-confetti/dist/types'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 import { useToast } from 'use-toast-mui'
@@ -14,6 +16,7 @@ export default () => {
     const { t } = useTranslation()
     const { account, isActive, contract, sendTransaction, } = useWeb3()
     const toast = useToast()
+    const confettiRef = useRef<TCanvasConfettiInstance>()
 
     const priceResponse = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice(), {
         revalidateOnMount: true,
@@ -39,7 +42,19 @@ export default () => {
         const tokenId = payload.args.tokenId
         toast.success(t('publicMint.toast.mintSuccess', { tokenId }))
         setState(produce(draft => { draft.isPendingTx = false }))
-    }), [t]))
+        confettiRef.current?.({
+            particleCount: 300,
+            spread: 70,
+            angle: -60,
+            origin: { x: 0, y: -0.3 },
+        })
+        confettiRef.current?.({
+            particleCount: 300,
+            spread: 70,
+            angle: -120,
+            origin: { x: 1, y: -0.3 },
+        })
+    }), [t, confettiRef]))
 
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()
@@ -69,7 +84,7 @@ export default () => {
             else
                 toast.error(t('publicMint.toast.unknownError', { code }))
         }
-    }, [contract, sendTransaction, state.amount, priceResponse.data])
+    }, [contract, sendTransaction, state.amount, priceResponse.data, t])
 
     const onAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
@@ -81,6 +96,7 @@ export default () => {
     }, [])
 
     return <>
+        <ReactCanvasConfetti onInit={({ confetti }) => { confettiRef.current = confetti }} />
         <Card>
             <form
                 onSubmit={handleMint}
