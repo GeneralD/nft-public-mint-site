@@ -13,6 +13,8 @@ publicMint:
   amountInput:
     label: "数量"
   priceLabel: "1{{nftSymbol}}: {{value}}{{valueSymbol}}"
+  startDateLabel: "開始日(UTC): {{date}}"
+  endDateLabel: "終了日(UTC): {{date}}"
   toast:
     mintSuccess: "NFTのミントに成功しました。(Token ID: {{tokenId}})"
     mintCanceled: "NFTのミントがキャンセルされました。"

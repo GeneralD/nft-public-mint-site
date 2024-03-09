@@ -1,6 +1,6 @@
 import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } from 'ethers'
 import { produce } from 'immer'
-import { FormEventHandler, useCallback, useRef, useState } from 'react'
+import { FormEventHandler, useCallback, useEffect, useRef, useState } from 'react'
 import ReactCanvasConfetti from 'react-canvas-confetti'
 import { TCanvasConfettiInstance } from 'react-canvas-confetti/dist/types'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +13,7 @@ import useWeb3, { useEvent } from '../web3/useWeb3'
 import Mount from './common/Mount'
 
 export default () => {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const { account, isActive, contract, sendTransaction, } = useWeb3()
     const toast = useToast()
     const confettiRef = useRef<TCanvasConfettiInstance>()
@@ -22,11 +22,48 @@ export default () => {
         revalidateOnMount: true,
         revalidateOnFocus: false,
     })
+
     const { mutate: mutatePrice } = priceResponse
+    useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price))
+
     const { data: symbol } = useSWR('symbol', (): Promise<string> => contract.symbol(), {
         revalidateOnMount: true,
         revalidateOnFocus: false,
     })
+
+    const mintStartDateResponse = useSWR('publicMintStartTimestamp', async () => {
+        const timestamp: bigint = await contract.publicMintStartTimestamp()
+        return new Date(Number(timestamp) * 1000)
+    }, {
+        revalidateOnMount: true,
+        revalidateOnFocus: false,
+    })
+    const { data: startDate, mutate: mutateStartDate } = mintStartDateResponse
+
+    const mintEndDateResponse = useSWR('publicMintEndTimestamp', async () => {
+        const timestamp: bigint = await contract.publicMintEndTimestamp()
+        return new Date(Number(timestamp) * 1000)
+    }, {
+        revalidateOnMount: true,
+        revalidateOnFocus: false,
+    })
+    const { data: endDate, mutate: mutateEndDate } = mintEndDateResponse
+
+    const onMintAvailablePeriodChanged = useCallback((payload: ContractEventPayload) => {
+        const startTimestamp: bigint = payload.args.startTimestamp
+        const endTimestamp: bigint = payload.args.endTimestamp
+        mutateStartDate(new Date(Number(startTimestamp) * 1000))
+        mutateEndDate(new Date(Number(endTimestamp) * 1000))
+    }, [mutateStartDate, mutateEndDate])
+
+    useEvent(contract.filters.PublicMintAvailablePeriodChanged(), onMintAvailablePeriodChanged)
+
+    const isMintAvailable = startDate && endDate && Date.now() >= startDate.getTime() && Date.now() <= endDate.getTime()
+
+    useEffect(() => {
+        console.info('PublicMint: startDate', startDate)
+        console.info('PublicMint: endDate', endDate)
+    }, [startDate, endDate])
 
     const [state, setState] = useState<{
         amount?: bigint,
@@ -35,8 +72,6 @@ export default () => {
         amount: 1n,
         isPendingTx: false,
     })
-
-    useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price))
 
     const confetti = useCallback(() => {
         confettiRef.current?.({
@@ -102,19 +137,19 @@ export default () => {
     return <>
         <ReactCanvasConfetti onInit={({ confetti }) => { confettiRef.current = confetti }} />
         <Card>
+            <Mount
+                response={priceResponse}
+                loading={() =>
+                    <Skeleton variant="text" width={130} sx={{ fontSize: '1.25rem' }} />
+                }
+                success={price =>
+                    <Typography variant='h6'>
+                        {t('publicMint.priceLabel', { value: formatEther(price), valueSymbol: 'ETH', nftSymbol: symbol })}
+                    </Typography>}
+            />
             <form
                 onSubmit={handleMint}
                 autoComplete='off'>
-                <Mount
-                    response={priceResponse}
-                    loading={() =>
-                        <Skeleton variant="text" width={130} sx={{ fontSize: '1.25rem' }} />
-                    }
-                    success={price =>
-                        <Typography variant='h6'>
-                            {t('publicMint.priceLabel', { value: formatEther(price), valueSymbol: 'ETH', nftSymbol: symbol })}
-                        </Typography>}
-                />
                 <TextField
                     label={t('publicMint.amountInput.label')}
                     type='number'
@@ -131,10 +166,30 @@ export default () => {
                     color='inherit'
                     variant='contained'
                     type='submit'
-                    disabled={!isActive || state.isPendingTx}>
+                    disabled={!isActive || state.isPendingTx || !isMintAvailable}>
                     {t('publicMint.mintButton.label')}
                 </Button>
-            </form >
-        </Card >
+            </form>
+            <Mount
+                response={mintStartDateResponse}
+                loading={() =>
+                    <Skeleton variant="text" width={130} sx={{ fontSize: '1.25rem' }} />
+                }
+                success={startDate =>
+                    <Typography variant='body2'>
+                        {t('publicMint.startDateLabel', { date: startDate.toLocaleString(i18n.language) })}
+                    </Typography>}
+            />
+            <Mount
+                response={mintEndDateResponse}
+                loading={() =>
+                    <Skeleton variant="text" width={130} sx={{ fontSize: '1.25rem' }} />
+                }
+                success={endDate =>
+                    <Typography variant='body2'>
+                        {t('publicMint.endDateLabel', { date: endDate.toLocaleString(i18n.language) })}
+                    </Typography>}
+            />
+        </Card>
     </>
 }
