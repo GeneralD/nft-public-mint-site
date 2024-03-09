@@ -42,7 +42,6 @@ const useSendTransaction = () => {
         setSendTransaction(() => async (tx: TransactionRequest) => {
             // MEMO: on localhost, this function will execute actual transactions. so it will be triggered twice.
             const populatedTx = await signer.populateTransaction(tx)
-
             // to avoid the "Cannot send both gasPrice and maxFeePerGas param" error
             delete populatedTx.maxFeePerGas
             delete populatedTx.maxPriorityFeePerGas

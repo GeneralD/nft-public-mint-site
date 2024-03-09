@@ -2,11 +2,10 @@ import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } fr
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import useSWR from 'swr'
 
 import { Button, Card, Skeleton, TextField, Typography } from '@mui/material'
 
-import usePublicMintPrice from '../web3/swr/usePublicMintPrice'
-import useSymbol from '../web3/swr/useSymbol'
 import useWeb3, { useEvent } from '../web3/useWeb3'
 import Mount from './common/Mount'
 
@@ -14,15 +13,14 @@ export default () => {
     const { t } = useTranslation()
     const { account, isActive, contract, sendTransaction, } = useWeb3()
 
-    const priceResponse = usePublicMintPrice({
-        revalidateOnFocus: false,
-    })
+    const priceResponse = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice())
+    const { mutate: mutatePrice } = priceResponse
+    const { data: symbol } = useSWR('symbol', (): Promise<string> => contract.symbol())
 
-    const { data: symbol } = useSymbol({
-        revalidateOnMount: true,
-        revalidateIfStale: true,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
+    useEvent(contract.filters.Transfer(ZeroAddress, account, null), (payload: ContractEventPayload) => {
+        const tokenId = payload.args.tokenId
+        console.info(`Minted: ${tokenId}`)
+        // TODO: display UI
     })
 
     const [state, setState] = useState<{
@@ -31,12 +29,7 @@ export default () => {
         amount: 1n,
     })
 
-    const userMinted = contract.filters.Transfer(ZeroAddress, account, null)
-    useEvent(userMinted, (payload: ContractEventPayload) => {
-        const tokenId = payload.args.tokenId
-        console.info(`Minted: ${tokenId}`)
-        // TODO: display UI
-    })
+    useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price), [mutatePrice])
 
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()
@@ -55,7 +48,14 @@ export default () => {
         }
     }, [contract, sendTransaction, state.amount, priceResponse.data])
 
-    const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
+    const onAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
+        setState(produce(draft => {
+            draft.amount = e.target.value.length === 0
+                ? undefined
+                : max(1n, BigInt(e.target.value))
+        }))
+    }, [])
 
     return <>
         <Card>
@@ -65,7 +65,7 @@ export default () => {
                 <Mount
                     response={priceResponse}
                     loading={() =>
-                        <Skeleton variant="text" sx={{ fontSize: '1.25rem' }} />
+                        <Skeleton variant="text" width={130} sx={{ fontSize: '1.25rem' }} />
                     }
                     success={price =>
                         <Typography variant='h6'>
@@ -80,13 +80,7 @@ export default () => {
                     size='small'
                     required
                     value={state.amount?.toString() || ''}
-                    onChange={e => {
-                        setState(produce(draft => {
-                            draft.amount = e.target.value.length === 0
-                                ? undefined
-                                : max(1n, BigInt(e.target.value))
-                        }))
-                    }}
+                    onChange={onAmountChange}
                     InputLabelProps={{
                         shrink: true,
                     }} />
