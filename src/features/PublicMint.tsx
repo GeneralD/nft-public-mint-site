@@ -2,25 +2,34 @@ import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } fr
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import useSWR from 'swr'
 
-import { Button, Card, TextField, Typography } from '@mui/material'
+import { Button, Card, Skeleton, TextField, Typography } from '@mui/material'
 
+import usePublicMintPrice from '../web3/swr/usePublicMintPrice'
+import useSymbol from '../web3/swr/useSymbol'
 import useWeb3, { useEvent } from '../web3/useWeb3'
+import Mount from './common/Mount'
 
 export default () => {
     const { t } = useTranslation()
     const { account, isActive, contract, sendTransaction, } = useWeb3()
-    const { data: price, mutate: mutatePrice, } = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice())
-    const { data: symbol } = useSWR('publicMintSymbol', (): Promise<string> => contract.symbol())
+
+    const priceResponse = usePublicMintPrice({
+        revalidateOnFocus: false,
+    })
+
+    const { data: symbol } = useSymbol({
+        revalidateOnMount: true,
+        revalidateIfStale: true,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+    })
 
     const [state, setState] = useState<{
         amount?: bigint,
     }>({
         amount: 1n,
     })
-
-    useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price), [mutatePrice])
 
     const userMinted = contract.filters.Transfer(ZeroAddress, account, null)
     useEvent(userMinted, (payload: ContractEventPayload) => {
@@ -33,6 +42,7 @@ export default () => {
         event.preventDefault()
 
         const amount = state.amount
+        const price = priceResponse.data
         const isReady = !!sendTransaction && !!amount && !!price
         if (!isReady) return
 
@@ -43,7 +53,7 @@ export default () => {
         } catch (error) {
             console.error(error)
         }
-    }, [contract, sendTransaction, state.amount, price])
+    }, [contract, sendTransaction, state.amount, priceResponse.data])
 
     const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)
 
@@ -52,11 +62,16 @@ export default () => {
             <form
                 onSubmit={handleMint}
                 autoComplete='off'>
-                {!!price && <>
-                    <Typography variant='h6'>
-                        {t('publicMint.priceLabel', { value: formatEther(price), valueSymbol: 'ETH', nftSymbol: symbol })}
-                    </Typography>
-                </>}
+                <Mount
+                    response={priceResponse}
+                    loading={() =>
+                        <Skeleton variant="text" sx={{ fontSize: '1.25rem' }} />
+                    }
+                    success={price =>
+                        <Typography variant='h6'>
+                            {t('publicMint.priceLabel', { value: formatEther(price), valueSymbol: 'ETH', nftSymbol: symbol })}
+                        </Typography>}
+                />
                 <TextField
                     label={t('publicMint.amountInput.label')}
                     type='number'
@@ -83,6 +98,6 @@ export default () => {
                     {t('publicMint.mintButton.label')}
                 </Button>
             </form >
-        </Card>
+        </Card >
     </>
 }

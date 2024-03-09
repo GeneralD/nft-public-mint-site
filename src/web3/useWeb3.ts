@@ -60,6 +60,14 @@ const useSendTransaction = () => {
     return sendTransaction
 }
 
+export default () => {
+    const { account } = useWeb3React()
+    const signer = useSigner()
+    const contract = useContract()
+    const sendTransaction = useSendTransaction()
+    return { account, isActive: !!account, signer, contract, sendTransaction, }
+}
+
 // Event subscription
 const unsignedContract = new Contract(contractAddress, abi, provider)
 export const useEvent = (event: ContractEventName, listener: Listener, deps: DependencyList = []) => {
@@ -67,12 +75,4 @@ export const useEvent = (event: ContractEventName, listener: Listener, deps: Dep
         unsignedContract.addListener(event, listener)
         return () => { unsignedContract.removeListener(event, listener) }
     }, [event, listener, ...deps])
-}
-
-export default () => {
-    const { account } = useWeb3React()
-    const signer = useSigner()
-    const contract = useContract()
-    const sendTransaction = useSendTransaction()
-    return { account, isActive: !!account, signer, contract, sendTransaction, }
 }
