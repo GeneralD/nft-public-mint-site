@@ -13,3 +13,9 @@ publicMint:
   amountInput:
     label: "数量"
   priceLabel: "1{{nftSymbol}}: {{value}}{{valueSymbol}}"
+  toast:
+    mintSuccess: "NFTのミントに成功しました。(Token ID: {{tokenId}})"
+    mintCanceled: "NFTのミントがキャンセルされました。"
+    walletNotInstalled: "ウォレットがインストールされていません。"
+    walletNotReady: "ウォレットが準備できていません。"
+    unknownError: "不明なエラーが発生しました。(Error code: {{code}})"

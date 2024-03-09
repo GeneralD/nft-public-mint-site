@@ -5,6 +5,7 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
 import { RouterProvider } from 'react-router-dom'
+import { ToastProvider } from 'use-toast-mui'
 
 import { ScopedCssBaseline, ThemeProvider } from '@mui/material'
 
@@ -20,9 +21,11 @@ root.render(
     <HelmetProvider>
       <ScopedCssBaseline>
         <ThemeProvider theme={theme}>
-          <Web3Provider>
-            <RouterProvider router={router} />
-          </Web3Provider>
+          <ToastProvider>
+            <Web3Provider>
+              <RouterProvider router={router} />
+            </Web3Provider>
+          </ToastProvider>
         </ThemeProvider>
       </ScopedCssBaseline>
     </HelmetProvider>

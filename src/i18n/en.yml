@@ -13,3 +13,9 @@ publicMint:
   amountInput:
     label: "Amount"
   priceLabel: "{{value}}{{valueSymbol}} per {{nftSymbol}}"
+  toast:
+    mintSuccess: "NFT minted successfully. (Token ID: {{tokenId}})"
+    mintCanceled: "NFT mint canceled."
+    walletNotInstalled: "Wallet not installed."
+    walletNotReady: "Wallet not ready."
+    unknownError: "An unknown error occurred. (Error code: {{code}})"

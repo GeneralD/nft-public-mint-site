@@ -1,10 +1,11 @@
 import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } from 'ethers'
 import { produce } from 'immer'
-import { FormEventHandler, useCallback, useEffect, useState } from 'react'
+import { FormEventHandler, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
+import { useToast } from 'use-toast-mui'
 
-import { Button, Card, Skeleton, TextField, Typography } from '@mui/material'
+import { Button, Card, debounce, Skeleton, TextField, Typography } from '@mui/material'
 
 import useWeb3, { useEvent } from '../web3/useWeb3'
 import Mount from './common/Mount'
@@ -12,6 +13,7 @@ import Mount from './common/Mount'
 export default () => {
     const { t } = useTranslation()
     const { account, isActive, contract, sendTransaction, } = useWeb3()
+    const toast = useToast()
 
     const priceResponse = useSWR('publicMintPrice', (): Promise<bigint> => contract.publicMintPrice(), {
         revalidateOnMount: true,
@@ -25,17 +27,19 @@ export default () => {
 
     const [state, setState] = useState<{
         amount?: bigint,
+        isPendingTx: boolean,
     }>({
         amount: 1n,
+        isPendingTx: false,
     })
 
     useEvent(contract.filters.PublicMintPriceChanged, (price: bigint) => mutatePrice(price))
 
-    useEvent(contract.filters.Transfer(ZeroAddress, account, null), (payload: ContractEventPayload) => {
+    useEvent(contract.filters.Transfer(ZeroAddress, account, null), useCallback(debounce((payload: ContractEventPayload) => {
         const tokenId = payload.args.tokenId
-        console.info(`Minted: ${tokenId}`)
-        // TODO: display UI
-    })
+        toast.success(t('publicMint.toast.mintSuccess', { tokenId }))
+        setState(produce(draft => { draft.isPendingTx = false }))
+    }), [t]))
 
     const handleMint: FormEventHandler<HTMLFormElement> = useCallback(async event => {
         event.preventDefault()
@@ -46,11 +50,24 @@ export default () => {
         if (!isReady) return
 
         try {
+            setState(produce(draft => { draft.isPendingTx = true }))
             const tx: TransactionRequest = await contract.publicMint(state.amount, { value: price * amount })
             const response = await sendTransaction(tx)
             console.info(`Transaction hash: ${response?.hash}`)
-        } catch (error) {
-            console.error(error)
+        } catch (error: any) {
+            setState(produce(draft => { draft.isPendingTx = false }))
+
+            const message: string = error.message
+            const code = error.code
+
+            if (message.includes("User denied transaction signature") || message.includes("User rejected the transaction"))
+                toast.warning(t('publicMint.toast.mintCanceled'))
+            else if (message.includes("ethereum wallet is not installed"))
+                toast.error(t('publicMint.toast.walletNotInstalled'))
+            else if (code === -32002)
+                toast.error(t('publicMint.toast.walletNotReady'))
+            else
+                toast.error(t('publicMint.toast.unknownError', { code }))
         }
     }, [contract, sendTransaction, state.amount, priceResponse.data])
 
@@ -94,7 +111,7 @@ export default () => {
                     color='inherit'
                     variant='contained'
                     type='submit'
-                    disabled={!isActive}>
+                    disabled={!isActive || state.isPendingTx}>
                     {t('publicMint.mintButton.label')}
                 </Button>
             </form >
