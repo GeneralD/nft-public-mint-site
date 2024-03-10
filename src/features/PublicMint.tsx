@@ -9,6 +9,7 @@ import { useToast } from 'use-toast-mui'
 
 import { Button, Card, debounce, Skeleton, TextField, Typography } from '@mui/material'
 
+import parseTransactionError from '../web3/parseTransactionError'
 import useWeb3, { useEvent } from '../web3/useWeb3'
 import Mount from './common/Mount'
 
@@ -110,18 +111,8 @@ export default () => {
             console.info(`Transaction hash: ${response?.hash}`)
         } catch (error: any) {
             setState(produce(draft => { draft.isPendingTx = false }))
-
-            const message: string = error.message
-            const code = error.code
-
-            if (message.includes("User denied transaction signature") || message.includes("User rejected the transaction"))
-                toast.warning(t('publicMint.toast.mintCanceled'))
-            else if (message.includes("ethereum wallet is not installed"))
-                toast.error(t('publicMint.toast.walletNotInstalled'))
-            else if (code === -32002)
-                toast.error(t('publicMint.toast.walletNotReady'))
-            else
-                toast.error(t('publicMint.toast.unknownError', { code }))
+            const txError = await parseTransactionError(error)
+            toast.error(t(txError.localizationKey, txError.localizationParams))
         }
     }, [contract, sendTransaction, state.amount, priceResponse.data, t])
 
