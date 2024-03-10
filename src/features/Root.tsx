@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 
 import useWindowSize from '../hooks/useWindowSize'
+import Banner from './Banner'
 import ConnectWalletButton from './common/ConnectWalletButton'
 import LanguageSelect from './common/LanguageSelect'
 
@@ -39,6 +40,7 @@ export default () => {
                         color='inherit' />
                 </Toolbar>
             </AppBar>
+            <Banner />
             <Outlet />
         </Box>
     </>
