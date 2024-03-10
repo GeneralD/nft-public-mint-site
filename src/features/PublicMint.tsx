@@ -11,6 +11,7 @@ import { Button, Card, debounce, Skeleton, TextField, Typography } from '@mui/ma
 
 import parseTransactionError from '../web3/parseTransactionError'
 import useWeb3, { useEvent } from '../web3/useWeb3'
+import Banner from './Banner'
 import Mount from './common/Mount'
 import PublicMintPeriod from './PublicMintPeriod'
 
@@ -94,6 +95,7 @@ export default () => {
 
     return <>
         <ReactCanvasConfetti onInit={({ confetti }) => { confettiRef.current = confetti }} />
+        <Banner />
         <Card>
             <Mount
                 response={priceResponse}

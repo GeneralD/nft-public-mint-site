@@ -84,7 +84,6 @@ const contractError = async (error: any): Promise<TxError> => {
                 localizationParams: {},
             }
         case ErrorType.RevertError:
-            // return 'tx.error.revertError'
             return {
                 level: ErrorLevel.Contract,
                 localizationKey: 'tx.error.contractRevertError',
