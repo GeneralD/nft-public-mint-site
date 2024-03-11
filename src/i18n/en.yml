@@ -17,6 +17,9 @@ publicMint:
   endDateLabel: "End (UTC): {{date}}"
   toast:
     mintSuccess: "NFT minted successfully. (Token ID: {{tokenId}})"
+banner:
+  publicMintProgressLabel: "Public Minting: {{numerator}}/{{denominator}}"
+  publicMintProgressLoadingLabel: "Public Minting: Loading..."
 tx:
   error:
     theRequestWasRejectedByTheUser: "The request was rejected by the user."

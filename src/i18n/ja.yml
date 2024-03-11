@@ -17,6 +17,9 @@ publicMint:
   endDateLabel: "終了日(UTC): {{date}}"
   toast:
     mintSuccess: "NFTのミントに成功しました。(Token ID: {{tokenId}})"
+banner:
+  publicMintProgressLabel: "パブリックミント: {{numerator}}/{{denominator}}"
+  publicMintProgressLoadingLabel: "パブリックミント: ロード中..."
 tx:
   error:
     theRequestWasRejectedByTheUser: "リクエストがユーザーによって拒否されました。"
