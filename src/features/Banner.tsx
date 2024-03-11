@@ -3,7 +3,7 @@ import Image from 'mui-image'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
-import { Avatar, Box, Typography } from '@mui/material'
+import { Avatar, Box, Stack, Typography } from '@mui/material'
 
 import useWeb3, { useEvent } from '../web3/useWeb3'
 
@@ -47,6 +47,35 @@ export default () => {
                 position='absolute' />
             <Box
                 position='absolute'
+                bottom='0'
+                width='100%'
+                textAlign='center'
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                <Stack
+                    direction='row'
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='0 3vw'>
+                    <Typography
+                        fontSize='4vw'
+                        display='inline'
+                        margin='1vw 0'
+                        color='white'
+                        fontWeight='bold'
+                        marginRight='auto'>
+                        {title}
+                    </Typography>
+                    <Typography
+                        fontSize='2.8vw'
+                        display='inline'
+                        color='white'
+                        fontWeight='bold'>
+                        {publicMintProgress}
+                    </Typography>
+                </Stack>
+            </Box>
+            <Box
+                position='absolute'
                 top='10vw'
                 left='3%'>
                 <Avatar
@@ -58,24 +87,6 @@ export default () => {
                         borderRadius: '20%',
                         position: 'relative',
                     }} />
-                <Typography
-                    position='relative'
-                    fontSize='4vw'
-                    display='inline'
-                    margin='1vw 0'
-                    color='white'
-                    fontWeight='bold'>
-                    {title}
-                </Typography>
-                <Typography
-                    position='relative'
-                    fontSize='3vw'
-                    display='inline'
-                    left='20vw'
-                    color='white'
-                    fontWeight='bold'>
-                    {publicMintProgress}
-                </Typography>
             </Box>
         </Box>
     </>

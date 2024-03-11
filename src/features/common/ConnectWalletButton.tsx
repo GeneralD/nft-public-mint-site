@@ -6,11 +6,13 @@ import {
     Typography
 } from '@mui/material'
 
+import useWindowSize from '../../hooks/useWindowSize'
 import { hooks, metaMask } from '../../web3/connectors/metaMask'
 
 export default (props: ButtonProps) => {
     const chainId = parseInt(process.env.REACT_APP_CHAIN_ID || '1')
 
+    const { isMobile } = useWindowSize()
     const { t } = useTranslation()
     const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
 
@@ -49,7 +51,9 @@ export default (props: ButtonProps) => {
     }, [metaMask])
 
     const shrinkedAddress = `${accounts?.[0]?.slice(0, 6)}...${accounts?.[0]?.slice(-4)}`
-    const label = isActive ? shrinkedAddress : t('connectWallet.connectButton.label')
+    const label = isActive
+        ? shrinkedAddress :
+        isMobile ? t('connectWallet.connectButton.shortLabel') : t('connectWallet.connectButton.label')
 
     return <>
         <Button
