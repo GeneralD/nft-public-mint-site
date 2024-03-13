@@ -88,7 +88,7 @@ const contractError = async (error: any): Promise<TxError> => {
                 level: ErrorLevel.Contract,
                 localizationKey: 'tx.error.contractRevertError',
                 localizationParams: {
-                    errorName: ethError.name,
+                    reason: ethError.reason || ethError.name,
                 },
             }
         case ErrorType.PanicError:
@@ -96,7 +96,7 @@ const contractError = async (error: any): Promise<TxError> => {
                 level: ErrorLevel.Contract,
                 localizationKey: 'tx.error.contractPanicError',
                 localizationParams: {
-                    errorName: ethError.name,
+                    reason: ethError.reason || ethError.name,
                 },
             }
         case ErrorType.CustomError:
@@ -104,7 +104,7 @@ const contractError = async (error: any): Promise<TxError> => {
                 level: ErrorLevel.Contract,
                 localizationKey: 'tx.error.contractCustomError',
                 localizationParams: {
-                    errorName: ethError.name,
+                    reason: ethError.reason || ethError.name,
                 },
             }
         case ErrorType.UserRejectError:
