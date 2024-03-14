@@ -19,7 +19,9 @@ export default ({
 
     const mintStartDateResponse = useSWR('publicMintStartTimestamp', async () => {
         const timestamp: bigint = await contract.publicMintStartTimestamp()
-        return new Date(Number(timestamp) * 1000)
+        // clamp to prevent Date constructor from throwing an error
+        const milliseconds = Number(timestamp) * 1_000
+        return new Date(Math.max(0, Math.min(4_102_412_400_000, milliseconds)))
     }, {
         revalidateOnMount: true,
         revalidateOnFocus: false,
@@ -28,7 +30,9 @@ export default ({
 
     const mintEndDateResponse = useSWR('publicMintEndTimestamp', async () => {
         const timestamp: bigint = await contract.publicMintEndTimestamp()
-        return new Date(Number(timestamp) * 1000)
+        // clamp to prevent Date constructor from throwing an error
+        const milliseconds = Number(timestamp) * 1_000
+        return new Date(Math.max(0, Math.min(4_102_412_400_000, milliseconds)))
     }, {
         revalidateOnMount: true,
         revalidateOnFocus: false,

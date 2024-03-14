@@ -14,8 +14,8 @@ publicMint:
   amountInput:
     label: "Amount"
   priceLabel: "{{value}}{{valueSymbol}} per {{nftSymbol}}"
-  startDateLabel: "Start (UTC): {{date}}"
-  endDateLabel: "End (UTC): {{date}}"
+  startDateLabel: "Start (UTC): {{date,datetime}}"
+  endDateLabel: "End (UTC): {{date,datetime}}"
   toast:
     mintSuccess: "NFT minted successfully. (Token ID: {{tokenId}})"
 banner:

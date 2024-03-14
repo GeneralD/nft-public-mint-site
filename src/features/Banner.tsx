@@ -33,7 +33,7 @@ export default () => {
     }
 
     const min = (...args: bigint[]) => args.reduce((a, b) => a < b ? a : b, args[0])
-    const publicMintProgress = lastTokenId && totalSupply
+    const publicMintProgress = lastTokenId !== undefined && totalSupply !== undefined
         ? t('banner.publicMintProgressLabel', { numerator: min(lastTokenId, totalSupply), denominator: lastTokenId })
         : t('banner.publicMintProgressLoadingLabel')
 
