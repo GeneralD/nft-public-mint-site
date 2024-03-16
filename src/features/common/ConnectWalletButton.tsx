@@ -8,6 +8,7 @@ import {
 } from '@mui/material'
 
 import useWindowSize from '../../hooks/useWindowSize'
+import addEthereumChainParameter from '../../web3/addEthereumChainParameter'
 import { hooks, metaMask } from '../../web3/connectors/metaMask'
 import parseTransactionError from '../../web3/parseTransactionError'
 
@@ -33,13 +34,13 @@ export default (props: ButtonProps) => {
             setDisconnectDialogOpen(true)
         } else {
             try {
-                await metaMask.activate(chainId)
+                await metaMask.activate(addEthereumChainParameter(chainId))
             } catch (error) {
-                const txError = await parseTransactionError(error)
-                toast.error(t(txError.localizationKey, txError.localizationParams))
+                const err = await parseTransactionError(error)
+                toast.error(t(err.localizationKey, err.localizationParams))
             }
         }
-    }, [metaMask, isActive])
+    }, [isActive, t])
 
     const handleCloseDialog = useCallback(() => {
         setDisconnectDialogOpen(false)

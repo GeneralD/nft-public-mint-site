@@ -17,7 +17,14 @@ const useSigner = () => {
     const { account } = useWeb3React()
     const [signer, setSigner] = useState<Signer | undefined>()
     useEffect(() => {
-        (async () => setSigner(account ? await provider.getSigner(account) : undefined))()
+        (async () => {
+            try {
+                if (!account) return setSigner(undefined)
+                return setSigner(await provider.getSigner(account))
+            } catch (error) {
+                console.error(error)
+            }
+        })()
     }, [account])
     return signer
 }
