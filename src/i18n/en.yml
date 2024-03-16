@@ -1,4 +1,11 @@
 ---
+menu:
+  languageSelection:
+    label: "Language"
+  openInEtherscan:
+    label: "Open in Etherscan"
+  openInOpensea:
+    label: "Open in OpenSea"
 connectWallet:
   connectButton:
     label: "Connect Wallet"

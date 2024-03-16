@@ -1,4 +1,11 @@
 ---
+menu:
+  languageSelection:
+    label: "表示言語"
+  openInEtherscan:
+    label: "Etherscanで開く"
+  openInOpensea:
+    label: "OpenSeaで開く"
 connectWallet:
   connectButton:
     label: "ウォレット接続"

@@ -94,7 +94,13 @@ export default () => {
 
     return <>
         <ReactCanvasConfetti onInit={({ confetti }) => { confettiRef.current = confetti }} />
-        <Card>
+        <Card sx={{
+            margin: '24px',
+            padding: '24px',
+            borderRadius: '32px',
+            backgroundColor: '#fcfcfc',
+            boxShadow: '14px 14px 28px #bebebe, -14px -14px 28px #ffffff, inset 7px 7px 14px #bebebe, inset -7px -7px 14px #ffffff',
+        }}>
             <Mount
                 response={priceResponse}
                 loading={() =>
@@ -110,6 +116,7 @@ export default () => {
                     onSubmit={handleMint}
                     autoComplete='off'>
                     <TextField
+                        sx={{ margin: '16px 8px' }}
                         label={t('publicMint.amountInput.label')}
                         type='number'
                         variant='standard'
@@ -122,6 +129,7 @@ export default () => {
                             shrink: true,
                         }} />
                     <Button
+                        sx={{ margin: '16px 8px' }}
                         color='inherit'
                         variant='contained'
                         type='submit'
