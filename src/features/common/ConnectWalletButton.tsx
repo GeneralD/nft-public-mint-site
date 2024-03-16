@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useToast } from 'use-toast-mui'
 
 import {
     Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
@@ -8,11 +9,13 @@ import {
 
 import useWindowSize from '../../hooks/useWindowSize'
 import { hooks, metaMask } from '../../web3/connectors/metaMask'
+import parseTransactionError from '../../web3/parseTransactionError'
 
 export default (props: ButtonProps) => {
     const chainId = parseInt(process.env.REACT_APP_CHAIN_ID || '1')
 
     const { isMobile } = useWindowSize()
+    const toast = useToast()
     const { t } = useTranslation()
     const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
 
@@ -32,7 +35,8 @@ export default (props: ButtonProps) => {
             try {
                 await metaMask.activate(chainId)
             } catch (error) {
-                console.error(error)
+                const txError = await parseTransactionError(error)
+                toast.error(t(txError.localizationKey, txError.localizationParams))
             }
         }
     }, [metaMask, isActive])
