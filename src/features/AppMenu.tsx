@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Language } from '@mui/icons-material'
+import { BarChart, Language, Sailing } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import { IconButton, Menu, MenuItem, Typography } from '@mui/material'
 
 import LanguageSelect from './common/LanguageSelect'
 
@@ -50,17 +50,27 @@ export default () => {
         >
             <MenuItem
                 onClick={openInOpensea}>
-                {t('menu.openInOpensea.label')}
+                <Sailing />
+                <Typography
+                    sx={{ marginX: '8px' }}>
+                    {t('menu.openInOpensea.label')}
+                </Typography>
             </MenuItem>
             <MenuItem
                 onClick={openInEtherscan}>
-                {t('menu.openInEtherscan.label')}
+                <BarChart />
+                <Typography
+                    sx={{ marginX: '8px' }}>
+                    {t('menu.openInEtherscan.label')}
+                </Typography>
             </MenuItem>
             <MenuItem>
                 <Language />
-                {t('menu.languageSelection.label')}
+                <Typography
+                    sx={{ marginX: '8px' }}>
+                    {t('menu.languageSelection.label')}
+                </Typography>
                 <LanguageSelect
-                    sx={{ marginLeft: '8px' }}
                     variant='outlined'
                     size='small' />
             </MenuItem>
