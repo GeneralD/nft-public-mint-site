@@ -13,6 +13,8 @@ export default (chainId: number): AddEthereumChainParameter => {
                 return 'Goerli'
             case 42:
                 return 'Kovan'
+            case 11155111:
+                return 'sepolia'
             default:
                 return `Chain ID: ${chainId}`
         }

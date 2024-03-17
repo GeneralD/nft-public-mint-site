@@ -1,6 +1,6 @@
 import {
-    Contract, ContractEventName, Listener, Signer, TransactionRequest, TransactionResponse,
-    WebSocketProvider
+    Contract, ContractEventName, getAddress, JsonRpcSigner, Listener, Signer, TransactionRequest,
+    TransactionResponse, WebSocketProvider
 } from 'ethers'
 import { useEffect, useState } from 'react'
 
@@ -20,7 +20,7 @@ const useSigner = () => {
         (async () => {
             try {
                 if (!account) return setSigner(undefined)
-                return setSigner(await provider.getSigner(account))
+                return setSigner(new JsonRpcSigner(provider, getAddress(account)))
             } catch (error) {
                 console.error(error)
             }

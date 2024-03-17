@@ -80,6 +80,7 @@ export default () => {
             setState(produce(draft => { draft.isPendingTx = false }))
             const txError = await parseTransactionError(error)
             toast.error(t(txError.localizationKey, txError.localizationParams))
+            console.error(error)
         }
     }, [contract, sendTransaction, state.amount, priceResponse.data, t])
 
