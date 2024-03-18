@@ -73,7 +73,7 @@ export default () => {
 
         try {
             setState(produce(draft => { draft.isPendingTx = true }))
-            const tx: TransactionRequest = await contract.publicMint(state.amount, { value: price * amount })
+            const tx: TransactionRequest = await contract.publicMint(amount, { value: price * amount })
             const response = await sendTransaction(tx)
             console.info(`Transaction hash: ${response?.hash}`)
         } catch (error: any) {
