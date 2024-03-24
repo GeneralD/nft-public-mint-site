@@ -1,4 +1,4 @@
-import { ContractEventPayload, formatEther, TransactionRequest, ZeroAddress } from 'ethers'
+import { ContractEventPayload, formatEther, ZeroAddress } from 'ethers'
 import { produce } from 'immer'
 import { FormEventHandler, useCallback, useRef, useState } from 'react'
 import ReactCanvasConfetti from 'react-canvas-confetti'
@@ -8,15 +8,19 @@ import useSWR from 'swr'
 import { useToast } from 'use-toast-mui'
 
 import { Button, Card, debounce, Skeleton, TextField, Typography } from '@mui/material'
+import { useWeb3React } from '@web3-react/core'
 
-import parseTransactionError from '../web3/parseTransactionError'
-import useWeb3, { useEvent } from '../web3/useWeb3'
+import contract from '../web3/contract'
+import useBrowserSigner from '../web3/hooks/useBrowserSigner'
+import { useEvent } from '../web3/hooks/useEvent'
+import parseTransactionError from '../web3/utils/parseTransactionError'
 import Mount from './common/Mount'
 import PublicMintPeriod from './PublicMintPeriod'
 
 export default () => {
     const { t } = useTranslation()
-    const { account, isActive, contract, sendTransaction, } = useWeb3()
+    const { account, isActive } = useWeb3React()
+    const signer = useBrowserSigner()
     const toast = useToast()
     const confettiRef = useRef<TCanvasConfettiInstance>()
 
@@ -68,21 +72,22 @@ export default () => {
 
         const amount = state.amount
         const price = priceResponse.data
-        const isReady = !!sendTransaction && !!amount && !!price
+        const isReady = !!signer && !!amount && !!price
         if (!isReady) return
 
         try {
             setState(produce(draft => { draft.isPendingTx = true }))
-            const tx: TransactionRequest = await contract.publicMint(amount, { value: price * amount })
-            const response = await sendTransaction(tx)
-            console.info(`Transaction hash: ${response?.hash}`)
+            const tx = await contract.publicMint.populateTransaction(amount, { value: amount * price })
+            const response = await signer.sendTransaction(tx)
+            await response.wait()
+            console.log("Transaction mined:", response.hash)
         } catch (error: any) {
             setState(produce(draft => { draft.isPendingTx = false }))
             const txError = await parseTransactionError(error)
             toast.error(t(txError.localizationKey, txError.localizationParams))
             console.error(error)
         }
-    }, [contract, sendTransaction, state.amount, priceResponse.data, t])
+    }, [state, signer, priceResponse, t])
 
     const onAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const max = (...args: bigint[]) => args.reduce((a, b) => a > b ? a : b, 0n)

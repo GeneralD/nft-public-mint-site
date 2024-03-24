@@ -6,7 +6,8 @@ import useSWR from 'swr'
 
 import { Skeleton, Typography } from '@mui/material'
 
-import useWeb3, { useEvent } from '../web3/useWeb3'
+import contract from '../web3/contract'
+import { useEvent } from '../web3/hooks/useEvent'
 import Mount from './common/Mount'
 
 export default ({
@@ -14,7 +15,6 @@ export default ({
 }: {
     whenAvailable: () => JSX.Element,
 }) => {
-    const { contract, } = useWeb3()
     const { t, i18n } = useTranslation()
 
     const mintStartDateResponse = useSWR('publicMintStartTimestamp', async () => {

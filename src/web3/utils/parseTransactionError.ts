@@ -1,6 +1,6 @@
 import { ErrorDecoder, ErrorType } from 'ethers-decode-error'
 
-import abi from './abi/abi'
+import abi from '../abi/abi'
 
 enum ErrorLevel {
     User,

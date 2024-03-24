@@ -1,15 +1,15 @@
-import { ContractEventPayload, ZeroAddress } from 'ethers'
+import { ContractEventPayload } from 'ethers'
 import Image from 'mui-image'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { Avatar, Box, Stack, Typography } from '@mui/material'
 
-import useWeb3, { useEvent } from '../web3/useWeb3'
+import contract from '../web3/contract'
+import { useEvent } from '../web3/hooks/useEvent'
 
 export default () => {
     const { t } = useTranslation()
-    const { contract } = useWeb3()
 
     const { data: lastTokenId } = useSWR('publicMintLastTokenId', (): Promise<bigint> => contract.publicMintLastTokenId(), {
         revalidateOnMount: true,

@@ -8,9 +8,8 @@ import {
 } from '@mui/material'
 
 import useWindowSize from '../../hooks/useWindowSize'
-import addEthereumChainParameter from '../../web3/addEthereumChainParameter'
 import { hooks, metaMask } from '../../web3/connectors/metaMask'
-import parseTransactionError from '../../web3/parseTransactionError'
+import parseTransactionError from '../../web3/utils/parseTransactionError'
 
 export default (props: ButtonProps) => {
     const chainId = parseInt(process.env.REACT_APP_CHAIN_ID || '1')
@@ -34,7 +33,7 @@ export default (props: ButtonProps) => {
             setDisconnectDialogOpen(true)
         } else {
             try {
-                await metaMask.activate(addEthereumChainParameter(chainId))
+                await metaMask.activate(chainId)
             } catch (error) {
                 const err = await parseTransactionError(error)
                 toast.error(t(err.localizationKey, err.localizationParams))
