@@ -14,9 +14,12 @@ type TxError = {
     localizationParams?: Record<string, string>
 }
 
-export default async (error: any): Promise<TxError> => {
-    return userError(error) || providerError(error.error) || await contractError(error)
-}
+export default async (error: any): Promise<TxError> =>
+    userError(error) ??
+    userError(error?.error) ??
+    userError(error?.info?.error) ??
+    providerError(error?.error) ??
+    await contractError(error)
 
 const userError = (error: any): TxError | undefined => {
     const localizationKey = userErrorLocalizationKey(error)
