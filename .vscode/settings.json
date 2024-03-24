@@ -1,17 +1,17 @@
 {
-    "javascript.format.semicolons": "remove",
-    "typescript.format.semicolons": "remove",
-    "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
-    "importSorter.importStringConfiguration.hasSemicolon": false,
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/Thumbs.db": true,
-        "**/.ruby-lsp": true,
-        "**/.vscode": true,
-        "**/node_modules": false
-    }
+  "javascript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove",
+  "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
+  "importSorter.importStringConfiguration.hasSemicolon": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.ruby-lsp": true,
+    "**/.vscode": true,
+    "**/node_modules": false
+  }
 }

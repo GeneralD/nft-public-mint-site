@@ -10,6 +10,7 @@ enum ErrorLevel {
 
 type TxError = {
     level: ErrorLevel
+    severity: 'warning' | 'error'
     localizationKey: string
     localizationParams?: Record<string, string>
 }
@@ -23,7 +24,7 @@ export default async (error: any): Promise<TxError> =>
 
 const userError = (error: any): TxError | undefined => {
     const localizationKey = userErrorLocalizationKey(error)
-    return localizationKey ? { level: ErrorLevel.User, localizationKey } : undefined
+    return localizationKey ? { level: ErrorLevel.User, severity: 'warning', localizationKey } : undefined
 }
 
 const userErrorLocalizationKey = (error: any): string | undefined => {
@@ -47,7 +48,7 @@ const userErrorLocalizationKey = (error: any): string | undefined => {
 
 const providerError = (error: any): TxError | undefined => {
     const localizationKey = providerErrorLocalizationKey(error)
-    return localizationKey ? { level: ErrorLevel.Provider, localizationKey } : undefined
+    return localizationKey ? { level: ErrorLevel.Provider, severity: 'error', localizationKey } : undefined
 }
 
 const providerErrorLocalizationKey = (error: any): string | undefined => {
@@ -83,12 +84,14 @@ const contractError = async (error: any): Promise<TxError> => {
         case ErrorType.EmptyError:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'error',
                 localizationKey: 'tx.error.contractEmptyError',
                 localizationParams: {},
             }
         case ErrorType.RevertError:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'error',
                 localizationKey: 'tx.error.contractRevertError',
                 localizationParams: {
                     reason: ethError.reason || ethError.name,
@@ -97,6 +100,7 @@ const contractError = async (error: any): Promise<TxError> => {
         case ErrorType.PanicError:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'error',
                 localizationKey: 'tx.error.contractPanicError',
                 localizationParams: {
                     reason: ethError.reason || ethError.name,
@@ -105,6 +109,7 @@ const contractError = async (error: any): Promise<TxError> => {
         case ErrorType.CustomError:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'error',
                 localizationKey: 'tx.error.contractCustomError',
                 localizationParams: {
                     reason: ethError.reason || ethError.name,
@@ -113,17 +118,20 @@ const contractError = async (error: any): Promise<TxError> => {
         case ErrorType.UserRejectError:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'warning',
                 localizationKey: 'tx.error.contractUserRejectError',
             }
         case ErrorType.RpcError:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'error',
                 localizationKey: 'tx.error.contractRpcError',
             }
         case ErrorType.UnknownError:
         default:
             return {
                 level: ErrorLevel.Contract,
+                severity: 'error',
                 localizationKey: 'tx.error.contractUnknownError',
             }
     }

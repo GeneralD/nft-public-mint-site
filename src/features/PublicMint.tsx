@@ -83,9 +83,8 @@ export default () => {
             console.log("Transaction mined:", response.hash)
         } catch (error: any) {
             setState(produce(draft => { draft.isPendingTx = false }))
-            const txError = await parseTransactionError(error)
-            toast.error(t(txError.localizationKey, txError.localizationParams))
-            console.error(error)
+            const err = await parseTransactionError(error)
+            toast.show(t(err.localizationKey, err.localizationParams), { severity: err.severity })
         }
     }, [state, signer, priceResponse, t])
 

@@ -18,7 +18,7 @@ export default () => {
     const [browserSigner, setBrowserSigner] = useState<JsonRpcSigner>()
     useEffect(() => {
         (async () => {
-            if (!browserProvider) return setBrowserSigner(undefined)
+            if (!browserProvider || !account) return setBrowserSigner(undefined)
             return setBrowserSigner(await browserProvider.getSigner(account))
         })()
     }, [browserProvider, account])

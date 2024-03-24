@@ -36,7 +36,7 @@ export default (props: ButtonProps) => {
                 await metaMask.activate(chainId)
             } catch (error) {
                 const err = await parseTransactionError(error)
-                toast.error(t(err.localizationKey, err.localizationParams))
+                toast.show(t(err.localizationKey, err.localizationParams), { severity: err.severity })
             }
         }
     }, [isActive, t])
