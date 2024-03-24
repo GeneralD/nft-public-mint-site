@@ -15,6 +15,7 @@ connectWallet:
     content: "ウォレットを切断すると、ウォレットのアドレスが表示されなくなります。"
     confirm: "切断する"
     cancel: "キャンセル"
+  walletConnectedMessage: "ウォレットに接続しました。"
 publicMint:
   mintButton:
     label: "ミント"

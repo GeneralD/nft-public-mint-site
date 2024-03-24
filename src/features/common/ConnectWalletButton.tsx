@@ -19,8 +19,8 @@ export default (props: ButtonProps) => {
     const { t } = useTranslation()
     const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
 
-    const { useAccounts, useIsActivating, useIsActive } = hooks
-    const accounts = useAccounts()
+    const { useAccount, useIsActivating, useIsActive } = hooks
+    const account = useAccount()
     const isActivating = useIsActivating()
     const isActive = useIsActive()
 
@@ -34,6 +34,7 @@ export default (props: ButtonProps) => {
         } else {
             try {
                 await metaMask.activate(chainId)
+                toast.success(t('connectWallet.walletConnectedMessage'))
             } catch (error) {
                 const err = await parseTransactionError(error)
                 toast.show(t(err.localizationKey, err.localizationParams), { severity: err.severity })
@@ -54,7 +55,7 @@ export default (props: ButtonProps) => {
         }
     }, [metaMask])
 
-    const shrinkedAddress = `${accounts?.[0]?.slice(0, 6)}...${accounts?.[0]?.slice(-4)}`
+    const shrinkedAddress = `${account?.slice(0, 6)}...${account?.slice(-4)}`
     const label = isActive
         ? shrinkedAddress :
         isMobile ? t('connectWallet.connectButton.shortLabel') : t('connectWallet.connectButton.label')

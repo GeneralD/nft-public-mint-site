@@ -15,6 +15,7 @@ connectWallet:
     content: "If you disconnect your wallet, your wallet address will no longer be displayed."
     confirm: "Disconnect"
     cancel: "Cancel"
+  walletConnectedMessage: "Wallet connected."
 publicMint:
   mintButton:
     label: "Mint"
