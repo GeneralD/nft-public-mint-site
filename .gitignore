@@ -258,3 +258,4 @@ dist
 
 # React build output
 build/
+.vercel
