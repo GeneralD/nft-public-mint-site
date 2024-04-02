@@ -258,7 +258,7 @@ dist
 
 # React build output
 build/
-.vercel
+
 # Created by https://www.toptal.com/developers/gitignore/api/vercel
 # Edit at https://www.toptal.com/developers/gitignore?templates=vercel
 
@@ -266,4 +266,3 @@ build/
 .vercel
 
 # End of https://www.toptal.com/developers/gitignore/api/vercel
-
